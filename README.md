@@ -1,46 +1,102 @@
-# irobot
-A basic python library
+<div align="center">
 
-## Overview
-Your description here
+# 🤖 irobot
 
-## Usage
-This project is set up using poetry. To install the dependencies, run `poetry install` from the root of the project.
+### *Intelligent. Modular. Build-Free.*
 
-```shell
-poetry install
+The central software ecosystem for the **iHuman Lab**, designed to decouple robotics hardware from algorithmic research.
+
+</div>
+
+---
+
+## 🎯 What is irobot?
+
+In the **Intelligent Human-Machine Nexus Lab**, we believe researchers should spend their time on *intelligence*, not *infrastructure*.
+
+**irobot** is a "Nexus" repository. It uses **Sugarcoat** to allow students and researchers to build complex, multi-file robotics projects in **pure Python**. No more waiting for `colcon build` every time you change a line of code.
+
+## ✨ Key Features
+
+| Feature | Benefit |
+| --- | --- |
+| ⚡ **Zero-Build Momentum** | Save your Python file and run. No compilation required. |
+| 🧱 **Project Isolation** | Every project lives in its own folder with its own logic. |
+| 🤖 **Robot-Agnostic** | Write an algorithm once; run it on any lab robot. |
+| 🎛️ **Live Parameter Tuning** | Use auto-generated Web UI sliders to tweak math on the fly. |
+| 🧩 **Nexus Utility Library** | Shared lab safety, math, and human-interaction tools. |
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Clone the nexus
+git clone https://github.com/iHuman-Lab/irobot.git
+cd irobot
+
+# One-time setup: Add src to your Python path
+echo "export PYTHONPATH=\$PYTHONPATH:\$(pwd)/src" >> ~/.bashrc
+source ~/.bashrc
+
+# Install the framework
+pip install sugarcoat-robotics
+
 ```
 
-To add a new dependency, run `poetry add <dependency>` from the root of the project.
+### Run Your First Nexus Project
 
-```shell
-poetry add <dependency>
+```python
+# src/projects/example_nexus/main_recipe.py
+from sugar.launcher import Launcher
+from src.common_lab.robot_configs import LabMobileBase
+from .modules.brain import MyAlgorithm
+
+# 1. Grab a standard lab robot
+launcher = LabMobileBase(name="Nexus_Bot_01")
+
+# 2. Inject your logic (the "Mind")
+launcher.add_component(MyAlgorithm())
+
+# 3. Enable the tuning dashboard
+launcher.enable_ui()
+
+# 4. Bring it to life!
+launcher.bringup()
+
 ```
 
-### Pre-Commit Hooks
-This project uses [pre-commit](https://pre-commit.com/) to run linting and formatting tools before each commit. To install the pre-commit hooks, run `pre-commit install` from the root of the project.
+## 📁 Project Structure
 
-```shell
-poetry run pre-commit install
+```text
+irobot/
+├── drivers/             # 🏗️ HARDWARE: Built once (LIDAR, Motors, etc.)
+└── src/                 # 🧠 LOGIC: Pure Python (The "Nexus")
+    ├── common_lab/      # 🤝 SHARED: Robot configs & safety logic
+    └── projects/        # 🚨 RESEARCH: Your independent projects
+        ├── human_intent/
+        ├── rescue_grid/
+        └── [your_project]/
+
 ```
 
-To run the pre-commit hooks manually, run `pre-commit run --all-files` from the root of the project.
+## 🧪 The iHuman Workflow
 
-```shell
-poetry run pre-commit run --all-files
-```
+1. **Branch:** `git checkout -b project/your-project-name`
+2. **Develop:** Create your 10+ files in your project subfolder.
+3. **Execute:** Run `python3 main_recipe.py`.
+4. **Iterate:** Change logic, save, and re-run. **Total time: < 2 seconds.**
 
+## 📄 License
 
-### Testing
-This project uses [pytest](https://docs.pytest.org/en/stable/) for testing. To run the tests, run `pytest` from the root of the project in the poetry shell.
+MIT License - Feel free to use this for your research!
 
-```shell
-poetry run pytest
-```
+---
 
-There are sensible defaults for pytest setup in the `pyproject.toml` file. You can override these defaults by passing in command line arguments. For example, to run the tests with debug logging enabled, run `pytest --log-cli-level=DEBUG` from the root of the project.
+<div align="center">
 
-```shell
-poetry run pytest --log-cli-level=DEBUG
-```
+**Intelligent Human-Machine Nexus Lab**
 
+*Bridging the gap between human intent and machine action.*
+
+</div>
