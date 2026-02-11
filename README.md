@@ -14,55 +14,50 @@ The central software ecosystem for the **iHuman Lab**, designed to decouple robo
 
 In the **Intelligent Human-Machine Nexus Lab**, we believe researchers should spend their time on *intelligence*, not *infrastructure*.
 
-**irobot** is a "Nexus" repository. It uses **Sugarcoat** to allow students and researchers to build complex, multi-file robotics projects in **pure Python**. No more waiting for `colcon build` every time you change a line of code.
+**irobot** is a "Nexus" repository. It uses **Sugarcoat** to allow students to build complex robotics projects in **pure Python**. No more waiting for `colcon build` every time you change a line of code.
 
 ## ✨ Key Features
 
-| Feature | Benefit |
-| --- | --- |
-| ⚡ **Zero-Build Momentum** | Save your Python file and run. No compilation required. |
-| 🧱 **Project Isolation** | Every project lives in its own folder with its own logic. |
-| 🤖 **Robot-Agnostic** | Write an algorithm once; run it on any lab robot. |
-| 🎛️ **Live Parameter Tuning** | Use auto-generated Web UI sliders to tweak math on the fly. |
-| 🧩 **Nexus Utility Library** | Shared lab safety, math, and human-interaction tools. |
+| Feature                   | Benefit                                                             |
+| ------------------------- | ------------------------------------------------------------------- |
+| ⚡ **Zero-Build Momentum** | Save your Python file and run. No compilation required.             |
+| 🧱 **Project Isolation**   | Independent sandboxes ensure Student A never breaks Student B.      |
+| 🤖 **Hardware Agnostic**   | Write an HMI algorithm once; deploy it on Sawyer, Aloha, or Drones. |
+| 🎛️ **Live Dashboards**     | Auto-generated Web UIs to tweak parameters during human trials.     |
+| 🧩 **Core Nexus Library**  | A shared "language" of HMI messages and safety utilities.           |
 
 ## 🚀 Quick Start
 
-### Installation
+### 1. Setup the Nexus
 
 ```bash
-# Clone the nexus
+# 1. Clone the nexus
 git clone https://github.com/iHuman-Lab/irobot.git
 cd irobot
 
-# One-time setup: Add src to your Python path
-echo "export PYTHONPATH=\$PYTHONPATH:\$(pwd)/src" >> ~/.bashrc
-source ~/.bashrc
+# 2. Pull in the latest robot drivers (Requires vcstool)
+# sudo apt install python3-vcstool
+vcs import src < .repos
 
-# Install the framework
-pip install sugarcoat-robotics
+# 3. Install Lab Dependencies (One-time setup)
+# This script handles pip installs and rosdep for the lab
+chmod +x scripts/bootstrap.sh
+./scripts/bootstrap.sh
+
+# 4. Build the core messages (Required for HMI language)
+colcon build --packages-select msgs
+source install/setup.bash
+
+# 5. Run a Research Recipe
+python3 src/projects/human_intent/recipes/run_trial.py
 
 ```
 
-### Run Your First Nexus Project
+### 2. Run a Research Recipe
 
 ```python
-# src/projects/example_nexus/main_recipe.py
-from sugar.launcher import Launcher
-from src.common_lab.robot_configs import LabMobileBase
-from .modules.brain import MyAlgorithm
-
-# 1. Grab a standard lab robot
-launcher = LabMobileBase(name="Nexus_Bot_01")
-
-# 2. Inject your logic (the "Mind")
-launcher.add_component(MyAlgorithm())
-
-# 3. Enable the tuning dashboard
-launcher.enable_ui()
-
-# 4. Bring it to life!
-launcher.bringup()
+# Each project owns its own "Launch Recipe"
+python3 src/projects/human_intent/recipes/run_trial.py
 
 ```
 
@@ -70,26 +65,35 @@ launcher.bringup()
 
 ```text
 irobot/
-├── drivers/             # 🏗️ HARDWARE: Built once (LIDAR, Motors, etc.)
-└── src/                 # 🧠 LOGIC: Pure Python (The "Nexus")
-    ├── common_lab/      # 🤝 SHARED: Robot configs & safety logic
-    └── projects/        # 🚨 RESEARCH: Your independent projects
-        ├── human_intent/
-        ├── rescue_grid/
-        └── [your_project]/
+├── src/
+│   ├── core/            # 🤝 SHARED: Common HMI messages & Nexus utilities.
+│   ├── drivers/         # 🏗️ WRAPPERS: Sugarcoated interfaces for lab hardware.
+│   ├── projects/        # 🚨 SANDBOX: Student-owned research packages.
+│   │   ├── human_intent/
+│   │   └── [your_project]/
+│   └── third_party/     # 📦 VENDOR: Raw drivers (Sawyer SDK, Crazyswarm, etc.)
+├── recipes/             # 📔 LAB MENU: Top-level demo and multi-robot recipes.
+├── docker/              # 🐳 CONTAINER: The universal lab environment.
+└── .repos               # 📑 MANIFEST: External dependencies list.
 
 ```
 
 ## 🧪 The iHuman Workflow
 
-1. **Branch:** `git checkout -b project/your-project-name`
-2. **Develop:** Create your 10+ files in your project subfolder.
-3. **Execute:** Run `python3 main_recipe.py`.
-4. **Iterate:** Change logic, save, and re-run. **Total time: < 2 seconds.**
+We utilize **Branch Protection** to keep the lab stable while allowing rapid iteration:
 
-## 📄 License
+1. **Sandbox:** Create your folder in `src/projects/`. This is your private kingdom.
+2. **Standardize:** If you need a new data type, contribute it to `src/core/msgs`.
+3. **Connect:** Use a **Sugarcoat Recipe** to bridge a `driver` to your `project` logic.
+4. **Deploy:** Run your recipe. **Iterate in seconds, not minutes.**
 
-MIT License - Feel free to use this for your research!
+---
+
+### 🛠️ Nexus Development Rules
+
+* **Don't Touch the Drivers:** Unless you are fixing a hardware bug.
+* **Namespacing is Key:** Always name your components relative to your project.
+* **PRs for Core:** Any changes to `core/` or `drivers/` require a Peer Review.
 
 ---
 
@@ -97,6 +101,6 @@ MIT License - Feel free to use this for your research!
 
 **Intelligent Human-Machine Nexus Lab**
 
-*Bridging the gap between human intent and machine action.*
+*Bridging the gap between humans and machine*
 
 </div>

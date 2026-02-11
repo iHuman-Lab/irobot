@@ -1,17 +1,30 @@
 [tool.poetry]
-name = "irobot"
+name = "ixp"
 version = "0.1.0"
-description = ""
-authors = ["Your name (or your organization/company/team) <ihuman.research.lab@gmail.com>"]
+description = "A Python package for running behavioral experiments at iHuman Lab"
+authors = [
+    "iHuman Lab <ihuman.research.lab@gmail.com>",
+]
 readme = "README.md"
-packages = [{ include = "irobot" }]
+license = "MIT"
+repository = "https://github.com/elaheoveisi/ixp"
+keywords = ["experiments", "behavioral", "psychology", "eye-tracking", "lsl"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python :: 3.11",
+]
+packages = [{ include = "ixp" }]
 
 [tool.poetry.dependencies]
+python = "^3.11"
 beartype = "^0.18.5"
 icontract = "^2.7.1"
-loguru = "^0.7.2"
 pydantic = "^2.9"
-python = "^3.11"
+ray = "^2.9"
+pygame = "^2.5"
+pylsl = "^1.16"
 
 
 [tool.poetry.group.test.dependencies]
@@ -26,35 +39,10 @@ pre-commit = "^3.8.0"
 ruff = "^0.6.7"
 
 
-[tool.pytest.ini_options]
-minversion = "7.3"
-addopts = [
-    "-ra",
-    "-vvv",
-    "-l",
-    "--doctest-modules",
-    "--color=yes",
-    "--code-highlight=yes",
-    # coverage makes the pycharm debugger not work
-    #    "--cov",
-    #    "--cov-branch",
-    #    "--cov-fail-under=100",
-    #    "--no-cov-on-fail",
-    "--log-disable=faker",
-    "--log-disable=asyncio",
-]
-
-testpaths = [".", "tests"]
-doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
-python_functions = ["it_*", "test_*"]
-log_cli = true
-log_cli_level = "WARNING"
-log_auto_indent = true
-
-[tool.black]
-line-length = 120
-target-version = ['py311']
-skip-string-normalization = true
+# [tool.black]
+# line-length = 120
+# target-version = ['py311']
+# skip-string-normalization = true
 
 [tool.isort]
 line_length = 120
@@ -62,50 +50,44 @@ profile = "black"
 multi_line_output = 3
 force_grid_wrap = 2
 
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.ruff]
-select = [
-    "A",
-    "ANN",
-    "ARG",
-    "B",
-    "BLE",
-    "C",
-    "C4",
-    "COM",
-    "D",
-    "DTZ",
-    "E",
-    "ERA",
-    "F",
-    "FBT",
-    "G",
-    "I",
-    "INP",
-    "N",
-    "PGH",
-    "PIE",
-    "PLE",
-    "PLR",
-    "PT",
-    "PTH",
-    "Q",
-    "RSE",
-    "RET",
-    "S",
-    "SIM",
-    "SLF",
-    "T20",
-    "TID",
-    "TCH",
-    "W",
-    "YTT",
-]
+select = ["ALL"]
 ignore = [
-    "ANN101",  # TODO: Remove this once beartype supports the Self type.
-    "TCH001",  # Since we use beartype, our type checks happen at runtime, so we don't want htem in a type-checking block
-    "PLE1205", # Loguru uses template strings, so this error is not applicable.
-    "D203",    # Ignore this since it conflicts with D211,
-    "D213",    # Ignore this since it conflicts with D212,
+    "ANN", # flake8-annotations
+    "COM", # flake8-commas
+    "C90", # mccabe complexity
+    "DJ",  # django
+    "EXE", # flake8-executable
+    "T10", # debugger
+    "TID", # flake8-tidy-imports
+
+    #### specific rules
+    "D100",   # ignore missing docs
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D200",
+    "D205",
+    "D212",
+    "D400",
+    "D401",
+    "D417",
+    "D415",
+    "E402",   # false positives for local imports
+    "E501",   # line too long
+    "TRY003", # external messages in exceptions are too verbose
+    "TD002",
+    "TD003",
+    "FIX002", # too verbose descriptions of todos
+    "S311",
+    "FBT003"
 ]
 
 fixable = ["ALL"]
