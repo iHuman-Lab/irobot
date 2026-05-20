@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from pathlib import Path
+from ros_sugar import Launcher
 
-import yaml
+from irobot.src.robots.crazyflie.examples.crazyflie_ros_component import CrazyflieDemo
+from irobot.src.robots.crazyflie import CrazyflieConfig
 
-from utils import skip_run
+component = CrazyflieDemo(
+    component_name='crazyflie_demo',
+    config=CrazyflieConfig(),
+)
 
-# The configuration file
-config_path = 'configs/config.yml'
-config = yaml.load(Path.open(str(config_path)), Loader=yaml.SafeLoader)
-
-with skip_run('skip', 'Data') as check, check():
-    pass
+launcher = Launcher()
+launcher.add_pkg(components=[component], activate_all_components_on_start=True)
+launcher.bringup()
