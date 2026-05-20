@@ -1,106 +1,100 @@
-<div align="center">
-
-# 🤖 irobot
-
+# irobot
 ### *Intelligent. Modular. Build-Free.*
 
-The central software ecosystem for the **iHuman Lab**, designed to decouple robotics hardware from algorithmic research.
+**irobot** is a Python library of robot drivers developed at the **iHuman Lab**. Each driver wraps a robot's hardware SDK into a clean, importable Python class. Install irobot, import the driver for your robot, and build your application on top — no framework lock-in required.
 
-</div>
+Drivers work standalone (plain Python) or as ROS2 components via [ros_sugar](https://github.com/automatika-robotics/ros-sugar), with no `colcon` build step.
 
 ---
 
-## 🎯 What is irobot?
+## 🤖 Supported Robots
 
-In the **Intelligent Human-Machine Nexus Lab**, we believe researchers should spend their time on *intelligence*, not *infrastructure*.
+| Robot | Description | Driver Docs |
+|-------|-------------|-------------|
+| [Crazyflie 2.x](https://www.bitcraze.io/products/crazyflie-2-1/) | Nano quadrotor by Bitcraze | [irobot/src/robots/crazyflie/README.md](irobot/src/robots/crazyflie/README.md) |
 
-**irobot** is a "Nexus" repository. It uses **Sugarcoat** to allow students to build complex robotics projects in **pure Python**. No more waiting for `colcon build` every time you change a line of code.
+---
 
-## ✨ Key Features
+## Prerequisites
 
-| Feature                   | Benefit                                                             |
-| ------------------------- | ------------------------------------------------------------------- |
-| ⚡ **Zero-Build Momentum** | Save your Python file and run. No compilation required.             |
-| 🧱 **Project Isolation**   | Independent sandboxes ensure Student A never breaks Student B.      |
-| 🤖 **Hardware Agnostic**   | Write an HMI algorithm once; deploy it on Sawyer, Aloha, or Drones. |
-| 🎛️ **Live Dashboards**     | Auto-generated Web UIs to tweak parameters during human trials.     |
-| 🧩 **Core Nexus Library**  | A shared "language" of HMI messages and safety utilities.           |
+- Python 3.11 or higher
+- The hardware SDK for your robot (see the robot's README for installation)
+- **ROS2 + ros_sugar** — only required if you are using ROS2-based components (optional)
+
+---
+
+## 📦 Installation
+
+Clone the repository and install in editable mode:
+
+```bash
+git clone https://github.com/iHumanLab/irobot.git
+cd irobot
+pip install -e .
+```
+
+Then install the SDK for your specific robot. See the robot's README for exact instructions.
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Setup the Nexus
-
-```bash
-# 1. Clone the nexus
-git clone https://github.com/iHuman-Lab/irobot.git
-cd irobot
-
-# 2. Pull in the latest robot drivers (Requires vcstool)
-# sudo apt install python3-vcstool
-vcs import src < .repos
-
-# 3. Install Lab Dependencies (One-time setup)
-# This script handles pip installs and rosdep for the lab
-chmod +x scripts/bootstrap.sh
-./scripts/bootstrap.sh
-
-# 4. Build the core messages (Required for HMI language)
-colcon build --packages-select msgs
-source install/setup.bash
-
-# 5. Run a Research Recipe
-python3 src/projects/human_intent/recipes/run_trial.py
-
-```
-
-### 2. Run a Research Recipe
+Import the controller and configuration class for your robot, configure it, and call the driver's methods:
 
 ```python
-# Each project owns its own "Launch Recipe"
-python3 src/projects/human_intent/recipes/run_trial.py
+from irobot import RobotController, RobotConfig
 
+robot = RobotController(RobotConfig(...))
+robot.connect()
+
+# Use the robot-specific API
+# See your robot's README for full usage and examples
 ```
 
-## 📁 Project Structure
+Each robot exports its classes at the top level of the `irobot` package. See the [Supported Robots](#-supported-robots) table above for links to robot-specific documentation.
 
-```text
+---
+
+## 📁 Repository Structure
+
+```
 irobot/
-├── src/
-│   ├── core/            # 🤝 SHARED: Common HMI messages & Nexus utilities.
-│   ├── drivers/         # 🏗️ WRAPPERS: Sugarcoated interfaces for lab hardware.
-│   ├── projects/        # 🚨 SANDBOX: Student-owned research packages.
-│   │   ├── human_intent/
-│   │   └── [your_project]/
-│   └── third_party/     # 📦 VENDOR: Raw drivers (Sawyer SDK, Crazyswarm, etc.)
-├── recipes/             # 📔 LAB MENU: Top-level demo and multi-robot recipes.
-├── docker/              # 🐳 CONTAINER: The universal lab environment.
-└── .repos               # 📑 MANIFEST: External dependencies list.
-
+├── main.py                    ← demo launcher (development use only)
+│
+└── irobot/src/
+    └── robots/                ← one folder per supported robot
+        └── <robot_name>/
+            ├── core/          ← driver internals (connection, controller, logging)
+            ├── examples/      ← usage examples and ROS2 component templates
+            ├── config.py      ← all hardware parameters in one dataclass
+            └── README.md      ← setup guide and full API documentation
 ```
 
-## 🧪 The iHuman Workflow
-
-We utilize **Branch Protection** to keep the lab stable while allowing rapid iteration:
-
-1. **Sandbox:** Create your folder in `src/projects/`. This is your private kingdom.
-2. **Standardize:** If you need a new data type, contribute it to `src/core/msgs`.
-3. **Connect:** Use a **Sugarcoat Recipe** to bridge a `driver` to your `project` logic.
-4. **Deploy:** Run your recipe. **Iterate in seconds, not minutes.**
+Each robot folder is self-contained: the driver, its configuration, its examples, and its hardware setup guide all live together. When you want to use a robot, start with its `README.md`.
 
 ---
 
-### 🛠️ Nexus Development Rules
+## 🤖 Adding a New Robot
 
-* **Don't Touch the Drivers:** Unless you are fixing a hardware bug.
-* **Namespacing is Key:** Always name your components relative to your project.
-* **PRs for Core:** Any changes to `core/` or `drivers/` require a Peer Review.
+Contributions are welcome. Follow these steps to add a new robot driver:
+
+1. Create a folder at `irobot/src/robots/<robot_name>/`
+2. Add `config.py` — a Python dataclass holding all hardware parameters (addresses, timeouts, rates). This is the only place parameters should live.
+3. Add `core/base.py` — a class that wraps the robot's SDK, manages the connection lifecycle, and exposes live state.
+4. Add `core/controller.py` — high-level motion primitives built on top of the base class.
+5. Add `core/logging.py` (optional) — a mixin for onboard sensor logging, if applicable.
+6. Add `examples/` — at least one runnable Python example and, if applicable, a ROS2 component template.
+7. Add a `README.md` — hardware setup instructions (drivers, udev rules, pairing) plus configuration and API documentation.
+8. Add `__init__.py` files throughout and export the main classes from `irobot/__init__.py`.
 
 ---
 
-<div align="center">
+## 📌 Design Conventions
 
-**Intelligent Human-Machine Nexus Lab**
+- **One `config.py` per robot** — all hardware parameters belong there and nowhere else.
+- **`robots/` is hardware-only** — drivers wrap hardware SDKs. No experiment logic, application state, or project-specific constants belong here.
+- **`examples/` travels with the robot** — examples are co-located with the robot they demonstrate and ship as part of the driver.
 
-*Bridging the gap between humans and machine*
+---
 
-</div>
+*iHuman Lab — Intelligent Human-Machine Nexus*
